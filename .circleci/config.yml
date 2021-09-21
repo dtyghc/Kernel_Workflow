@@ -1,0 +1,18 @@
+version: 2.1
+jobs:
+  compile:
+   docker:
+      - image: fr3akyphantom/droid-builder:latest
+   steps:
+      - run:
+          command: |
+           git clone --depth=1 https://github.com/jrchintu/sleepy_kernel_xiaomi_mido --single-branch -b 11 mido
+           cd mido
+           wget https://raw.githubusercontent.com/jrchintu/ci/main/build.sh
+           chmod a+x ./build.sh
+           bash ./build.sh
+workflows:
+  version: 2.1
+  cooking:
+    jobs:
+      - compile
