@@ -197,6 +197,7 @@ KERVER=$(make kernelversion)
                 echo -e "$yellow << making kernel zip >> \n $white"
                 cp -r "$IMG" zip/
                 cd zip
+                tg_post_build Image.gz-dtb "$CHATID"
                 mv Image.gz-dtb zImage
                 export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"-"$DATE"
                 zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
