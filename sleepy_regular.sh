@@ -74,29 +74,29 @@ export BOT_MSG_URL="https://api.telegram.org/bot$API_BOT/sendMessage"
 export BOT_BUILD_URL="https://api.telegram.org/bot$API_BOT/sendDocument"
 
 tg_post_msg() {
-        curl -s -X POST "$BOT_MSG_URL" -d chat_id="$2" \
-        -d "parse_mode=html" \
-        -d text="$1"
+	curl -s -X POST "$BOT_MSG_URL" -d chat_id="$2" \
+		-d "parse_mode=html" \
+		-d text="$1"
 }
 
 tg_post_build() {
-        #Post MD5Checksum alongwith for easeness
-        MD5CHECK=$(md5sum "$1" | cut -d' ' -f1)
+	#Post MD5Checksum alongwith for easeness
+	MD5CHECK=$(md5sum "$1" | cut -d' ' -f1)
 
-        #Show the Checksum alongwith caption
-        curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
-        -F chat_id="$2" \
-        -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
-        -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
+	#Show the Checksum alongwith caption
+	curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
+		-F chat_id="$2" \
+		-F "disable_web_page_preview=true" \
+		-F "parse_mode=html" \
+		-F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
 }
 
 tg_error() {
-        curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
-        -F chat_id="$2" \
-        -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
-        -F caption="$3Failed to build , check <code>error.log</code>"
+	curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
+		-F chat_id="$2" \
+		-F "disable_web_page_preview=true" \
+		-F "parse_mode=html" \
+		-F caption="$3Failed to build , check <code>error.log</code>"
 }
 
 # Now let's clone gcc/clang on HOME dir
@@ -104,8 +104,7 @@ tg_error() {
 # For regen the defconfig . use the regen.sh script
 
 if [ "$TOOLCHAIN" == gcc ]; then
-	if [ ! -d "$HOME/gcc64" ] && [ ! -d "$HOME/gcc32" ]
-	then
+	if [ ! -d "$HOME/gcc64" ] && [ ! -d "$HOME/gcc32" ]; then
 		echo -e "$green << cloning gcc from arter >> \n $white"
 		git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 "$HOME"/gcc64
 		git clone --depth=1 https://github.com/mvaisakh/gcc-arm "$HOME"/gcc32
@@ -114,8 +113,7 @@ if [ "$TOOLCHAIN" == gcc ]; then
 	export STRIP="$HOME/gcc64/aarch64-elf/bin/strip"
 	export KBUILD_COMPILER_STRING=$("$HOME"/gcc64/bin/aarch64-elf-gcc --version | head -n 1)
 elif [ "$TOOLCHAIN" == clang ]; then
-	if [ ! -d "$HOME/proton_clang" ]
-	then
+	if [ ! -d "$HOME/proton_clang" ]; then
 		echo -e "$green << cloning proton clang >> \n $white"
 		git clone --depth=1 https://github.com/kdrag0n/proton-clang.git "$HOME"/proton_clang
 	fi
@@ -127,30 +125,30 @@ fi
 # Setup build process
 
 build_kernel() {
-Start=$(date +"%s")
+	Start=$(date +"%s")
 
-if [ "$TOOLCHAIN" == clang  ]; then
-	echo clang
-	make -j$(nproc --all) O=out \
-                              ARCH=arm64 \
-                              AR=llvm-ar \
-                              NM=llvm-nm \
-                              OBJCOPY=llvm-objcopy \
-                              OBJDUMP=llvm-objdump \
-                              STRIP=llvm-strip \
-                              CC=clang \
-                              CROSS_COMPILE=aarch64-linux-gnu- \
-                              CROSS_COMPILE_ARM32=arm-linux-gnueabi-  2>&1 | tee error.log
-elif [ "$TOOLCHAIN" == gcc  ]; then
-	echo gcc
-	make -j$(nproc --all) O=out \
-			      ARCH=arm64 \
-			      CROSS_COMPILE=aarch64-elf- \
-			      CROSS_COMPILE_ARM32=arm-eabi- 2>&1 | tee error.log
-fi
+	if [ "$TOOLCHAIN" == clang ]; then
+		echo clang
+		make -j$(nproc --all) O=out \
+			ARCH=arm64 \
+			AR=llvm-ar \
+			NM=llvm-nm \
+			OBJCOPY=llvm-objcopy \
+			OBJDUMP=llvm-objdump \
+			STRIP=llvm-strip \
+			CC=clang \
+			CROSS_COMPILE=aarch64-linux-gnu- \
+			CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee error.log
+	elif [ "$TOOLCHAIN" == gcc ]; then
+		echo gcc
+		make -j$(nproc --all) O=out \
+			ARCH=arm64 \
+			CROSS_COMPILE=aarch64-elf- \
+			CROSS_COMPILE_ARM32=arm-eabi- 2>&1 | tee error.log
+	fi
 
-End=$(date +"%s")
-Diff=$(($End - $Start))
+	End=$(date +"%s")
+	Diff=$(($End - $Start))
 }
 
 export IMG="$MY_DIR"/out/arch/arm64/boot/Image.gz-dtb
@@ -178,39 +176,38 @@ build_kernel || error=true
 DATE=$(date +"%Y%m%d-%H%M%S")
 KERVER=$(make kernelversion)
 
-        if [ -f "$IMG" ]; then
-                echo -e "$green << Build completed in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds >> \n $white"
-        else
-                echo -e "$red << Failed to compile the kernel , Check up to find the error >>$white"
-                tg_post_msg "Kernel failed to compile uploading error log"
-                tg_error "error.log" "$CHATID"
-                tg_post_msg "done" "$CHATID"
-                rm -rf out
-                rm -rf testing.log
-                rm -rf error.log
-                exit 1
-        fi
+if [ -f "$IMG" ]; then
+	echo -e "$green << Build completed in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds >> \n $white"
+else
+	echo -e "$red << Failed to compile the kernel , Check up to find the error >>$white"
+	tg_post_msg "Kernel failed to compile uploading error log"
+	tg_error "error.log" "$CHATID"
+	tg_post_msg "done" "$CHATID"
+	rm -rf out
+	rm -rf testing.log
+	rm -rf error.log
+	exit 1
+fi
 
-        if [ -f "$IMG" ]; then
-                echo -e "$green << cloning AnyKernel from your repo >> \n $white"
-                git clone "$AnyKernel" --single-branch -b "$AnyKernelbranch" zip
-                echo -e "$yellow << making kernel zip >> \n $white"
-                cp -r "$IMG" zip/
-                cd zip
-                tg_post_build Image.gz-dtb "$CHATID"
-                mv Image.gz-dtb zImage
-                export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"-"$DATE"
-                zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
-                curl -sLo zipsigner-3.0.jar https://raw.githubusercontent.com/shashank1436/anykernel/zipper/zipsigner-3.0.jar
-                java -jar zipsigner-3.0.jar "$ZIP".zip "$ZIP"-signed.zip
-                tg_post_msg "Kernel successfully compiled uploading ZIP" "$CHATID"
-                tg_post_build "$ZIP"-signed.zip "$CHATID"
-                tg_post_msg "done" "$CHATID"
-                cd ..
-                rm -rf error.log
-                rm -rf out
-                rm -rf zip
-                rm -rf testing.log
-                exit
-        fi
-
+if [ -f "$IMG" ]; then
+	echo -e "$green << cloning AnyKernel from your repo >> \n $white"
+	git clone "$AnyKernel" --single-branch -b "$AnyKernelbranch" zip
+	echo -e "$yellow << making kernel zip >> \n $white"
+	cp -r "$IMG" zip/
+	cd zip
+	tg_post_build Image.gz-dtb "$CHATID"
+	mv Image.gz-dtb zImage
+	export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"-"$DATE"
+	zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
+	curl -sLo zipsigner-3.0.jar https://raw.githubusercontent.com/shashank1436/anykernel/zipper/zipsigner-3.0.jar
+	java -jar zipsigner-3.0.jar "$ZIP".zip "$ZIP"-signed.zip
+	tg_post_msg "Kernel successfully compiled uploading ZIP" "$CHATID"
+	tg_post_build "$ZIP"-signed.zip "$CHATID"
+	tg_post_msg "done" "$CHATID"
+	cd ..
+	rm -rf error.log
+	rm -rf out
+	rm -rf zip
+	rm -rf testing.log
+	exit
+fi
