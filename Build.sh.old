@@ -59,7 +59,7 @@ KRNL_REL_TAG="v6"
 
 DEFCONFIG="mido_defconfig"
 
-AnyKernel="https://github.com/shashank1436/anykernel"
+AnyKernel="https://github.com/Jrchintu/anykernel"
 AnyKernelbranch="master"
 
 HOSST="CIRCLECI"
