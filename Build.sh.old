@@ -64,7 +64,6 @@ AnyKernelbranch="master"
 
 HOSST="CIRCLECI"
 USEER="CHINTU"
-
 TOOLCHAIN="clang"
 
 # setup telegram env
