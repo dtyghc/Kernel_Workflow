@@ -21,7 +21,7 @@ jobs:
     
     - name: Building Kernel..
       run: |
-          git clone --depth=1 -b oc https://github.com/shashank1436/kernel_mido mido
+          git clone --depth=1 -b oc https://github.com/Anantgoel0123456/kernel_mido mido
           cp sleepy_oc.sh mido && cd mido && chmod +x sleepy_oc.sh
           bash sleepy_oc.sh
       shell: bash
