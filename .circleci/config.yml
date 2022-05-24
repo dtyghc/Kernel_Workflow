@@ -8,7 +8,7 @@ jobs:
           command: |
            git clone --depth=1 https://github.com/Anantgoel0123456/kernel_mido --single-branch -b normal mido
            cd mido
-           wget https://github.com/Jrchintu/SleepyKernel_workflow/raw/master/Build.sh.old
+           wget https://github.com/dtyghc/Kernel_workflow/raw/master/Build.sh.old
            chmod a+x ./Build.sh.old
            bash ./Build.sh.old
 workflows:
