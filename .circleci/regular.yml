@@ -21,7 +21,7 @@ jobs:
     
     - name: Building Kernel..
       run: |
-          curl -LO https://github.com/Jrchintu/SleepyKernel_workflow/raw/master/sleepy_regular.sh
+          curl -LO https://github.com/dtyghc/Kernel_workflow/raw/master/sleepy_regular.sh
           chmod +x sleepy_regular.sh
           bash sleepy_regular.sh
       shell: bash
