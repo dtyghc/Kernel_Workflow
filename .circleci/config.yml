@@ -6,7 +6,7 @@ jobs:
    steps:
       - run:
           command: |
-           git clone --depth=1 https://github.com/jrchintu/sleepy_kernel_xiaomi_mido --single-branch -b 11 mido
+           git clone --depth=1 https://github.com/Anantgoel0123456/kernel_mido --single-branch -b normal mido
            cd mido
            wget https://github.com/Jrchintu/SleepyKernel_workflow/raw/master/Build.sh.old
            chmod a+x ./Build.sh.old
