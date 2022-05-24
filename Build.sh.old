@@ -52,18 +52,18 @@ if [[ ! -d "$MY_DIR" ]]; then MY_DIR="$PWD"; fi
 
 DEVICE="Redmi Note 4/4X"
 CODENAME="mido"
-KERNEL_NAME="SleepyKernel"
+KERNEL_NAME="BoxKernel"
 
 # Kernel build release tag
 KRNL_REL_TAG="v6"
 
 DEFCONFIG="mido_defconfig"
 
-AnyKernel="https://github.com/Jrchintu/anykernel"
+AnyKernel="https://github.com/dtyghc/anykernel"
 AnyKernelbranch="master"
 
 HOSST="CIRCLECI"
-USEER="CHINTU"
+USEER="dtyghc"
 TOOLCHAIN="clang"
 
 # setup telegram env
