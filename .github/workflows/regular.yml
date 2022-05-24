@@ -21,7 +21,7 @@ jobs:
     
     - name: Building Kernel..
       run: |
-          git clone --depth=1 -b r11 https://github.com/shashank1436/kernel_xiaomi_mido mido
+          git clone --depth=1 -b normal https://github.com/Anantgoel0123456/kernel_mido mido
           cp sleepy_regular.sh mido && cd mido && chmod +x sleepy_regular.sh
           bash sleepy_regular.sh
       shell: bash
